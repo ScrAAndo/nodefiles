@@ -1,3 +1,5 @@
+// This program calculates the payroll for a list of employees, including regular pay and overtime pay. It also identifies the highest paid employee.
+
 var readLineSync = require("readline-sync")
 
 
