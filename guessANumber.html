@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <style>
+      .btn {
+        border: 1px solid black;
+        padding: 5px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Guess a Number</h1>
+    <p>Press the following button to start the game</p>
+    <input
+      type="button"
+      class="btn btn-primary"
+      id="btn_start_game"
+      value="Start Game"
+    />
+    <script>
+      // Our API address and port goes here. It can be an IP address or DNS name.
+      // In this case it is the loopback address.
+      var ipAddressAndPort = "127.0.0.1:8080";
+
+      // When you click the object with id #btn_say_hello, execute a function that
+      // does the following:
+      // - Sends a HTTP GET request using the IP address and port with a route of /sayhello
+      // - Presents an alert with what is returned from the Node.js file (contained in 'data')
+      $("#btn_start_game").click(function () {
+        $.post(
+          "http://" + ipAddressAndPort + "/startgame",
+          {},
+          function (data) {
+            alert(data["APIMessage"]);
+          },
+        );
+      });
+    </script>
+  </body>
+</html>
