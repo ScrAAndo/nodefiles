@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Leaderboard Game</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Submit Score</h1>
+    <label>Name: <input type="text" id="name" /></label><br />
+    <label>Score: <input type="number" id="score" /></label><br />
+    <button id="btn_submit_score">Submit Score</button>
+    <div>
+      <h2>Current Leaders:</h2>
+      <div
+        id="leaders"
+        style="white-space: pre-wrap; font-family: monospace"
+      ></div>
+    </div>
+
+    <script>
+      var ipAddressAndPort = "127.0.0.1:8080";
+
+      $("#btn_submit_score").click(function () {
+        // get the name and score from the .html document
+        var name = $("#name").val();
+        var score = parseInt($("#score").val());
+
+        if (name && !isNaN(score)) {
+          // enter your resource call here, just like in class
+          // Use $.post with 'http://' + ipAddressAndPort + '/yourResource'
+          // Make sure your route name matches the POST handler in your server code
+          // you should be passing a json object with two key-value pairs represeting name and score
+          // Insert your $.post(...) call below
+          $.post(
+            "http://" + ipAddressAndPort + "/submitScore",
+            { name: name, score: score },
+            function (data) {
+              // note: Your server script should send back a JSON object with a key of APIMessage (for the alert based on the results)
+              // and leaders with the current leaderboard
+              alert(data["APIMessage"]);
+              // This line shows the updated leaderboard — make sure your server sends 'Leaders' in the response
+              $("#leaders").text(data.Leaders);
+            },
+          );
+        } else {
+          alert("Please enter a name and a valid score.");
+        }
+      });
+    </script>
+  </body>
+</html>
