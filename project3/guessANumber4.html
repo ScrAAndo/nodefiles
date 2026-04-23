@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <style>
+      .btn {
+        border: 1px solid black;
+        padding: 5px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Guess a Number</h1>
+    <p>Press the following button to start the game</p>
+    <p></p>
+    <p>
+      Enter your guess below after starting the game and press "Try this guess"
+    </p>
+    <label for="user_guess">Enter your guess</label>
+    <input
+      type="text"
+      id="user_guess"
+      value="50"
+      placeholder="Enter a number"
+      disabled
+    />
+    <input
+      type="button"
+      class="btn btn-primary"
+      id="btn_guess"
+      value="Try this guess"
+      disabled
+    />
+    <input
+      type="button"
+      class="btn btn-primary"
+      id="btn_start_game"
+      value="Start Game"
+    />
+    <input
+      type="button"
+      class="btn btn-primary"
+      id="btn_reset_game"
+      value="Reset Game"
+    />
+
+    <script>
+      // Our API address and port goes here. It can be an IP address or DNS name.
+      // In this case it is the loopback address.
+
+      var ipAddressAndPort = "127.0.0.1:8080";
+      //var ipAddressAndPort = location.host + ":8080";
+      var gameId = 0;
+      var userGuess = 0;
+
+      // When you click the object with id #btn_start_game, execute a function that
+      // does the following:
+      // - Sends a HTTP POST request using the IP address and port with a route of //startgame
+      // - Presents an alert with what is returned from the Node.js file (contained in 'data')
+      $("#btn_start_game").click(function () {
+        gameId = Math.floor(Math.random() * 100000) + 1;
+        user_guess.disabled = false;
+        btn_guess.disabled = false;
+        btn_start_game.disabled = true;
+        $.post(
+          "http://" + ipAddressAndPort + "/startgame",
+          { gameId: gameId },
+          function (data) {
+            alert(data["APIMessage"]);
+          },
+        );
+      });
+
+      $("#btn_guess").click(function () {
+        userGuess = parseInt(document.getElementById("user_guess").value);
+        if (userGuess < 1 || userGuess > 100) {
+          alert("please enter a number between 1 and 100");
+        } else {
+          $.get(
+            "http://" + ipAddressAndPort + "/guessMade",
+            { gameId: gameId, userGuess: userGuess },
+            function (data) {
+              alert(data["APIMessage"]);
+            },
+          );
+        }
+      });
+
+      $("#btn_reset_game").click(function () {
+        $.post(
+          "http://" + ipAddressAndPort + "/resetgame",
+          { gameId: gameId },
+          function (data) {
+            alert(data["APIMessage"]);
+            resetGame(true);
+          },
+        );
+      });
+
+      function resetGame(isReset) {
+        user_guess.disabled = isReset;
+        btn_guess.disabled = isReset;
+        btn_start_game.disabled = !isReset;
+      }
+    </script>
+  </body>
+</html>
