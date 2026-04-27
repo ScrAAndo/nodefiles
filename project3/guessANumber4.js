@@ -4,7 +4,8 @@ var app = express();
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
-var randomNumber = {}; 
+var randomNumber = {};
+var games = {}; 
 
 app.use(function(req, res, next) {
     express.urlencoded({extended: false})
@@ -21,10 +22,16 @@ app.use(function(req, res, next) {
 
 
 app.post('/startgame', function(req,res){
-    randomNumberGenerated = Math.floor(Math.random() * 100) + 2;
+    randomNumberGenerated = Math.floor(Math.random() * 100) + 1;
     randomNumber[req.body.gameId]= randomNumberGenerated;
+
+    games[req.body.gameId] = {
+        target: randomNumberGenerated,
+        count: 0
+    };
+
     console.log('Game number ' + req.body.gameId + ' has started. The number to guess is ' + randomNumberGenerated)
-    responseMessage = {APIMessage: "Game number " + req.body.gameId + " has started. Good luck!"};
+    responseMessage = {APIMessage: "Game number " + req.body.gameId + " has started. You have 5 guesses. Good luck!"};
     res.json(responseMessage);
 });
 
@@ -32,22 +39,36 @@ app.get('/guessMade', function(req, res) {
     const gameId = req.query.gameId;
     const numberToGuess = randomNumber[gameId]; // Fetch from the map
     const numberGuessed = parseInt(req.query.userGuess);
+    const game = games[gameId];
     
+    game.count++;
+    const remainingGuesses = 5 - game.count;
+    // Prefix message
+    let statusPrefix = "Guess #" + game.count + "\n You have " + remainingGuesses + " guesses left. \n";
+    let outMessage = "";
+    let isGuessed = false;
+    let gameOver = false;
     // Determine the result locally within this function
 
-    let outMessage = "The guess of " + numberGuessed;
-    let isGuessed = false;
-
-    if (numberGuessed == numberToGuess) {
+    if (numberGuessed === numberToGuess) {
         isGuessed = true;
-        outMessage += " is correct - congratulations!";
+        gameOver = true;
+        outMessage = statusPrefix + "The guess of " + numberGuessed + " is correct - congratulations!";
+    } else if (game.count >= 5) {
+        gameOver = true;
+        outMessage = statusPrefix + "The guess of " + numberGuessed + " is wrong! You ran out of guesses. The number was " + numberToGuess;
     } else if (numberGuessed < numberToGuess) {
-        outMessage += " is too low!";
+        outMessage = statusPrefix + "The guess of " + numberGuessed + " is too low!";
     } else {
-        outMessage += " is too high!";
+        outMessage = "The guess of " + numberGuessed + " is too high!";
     }
 
-    res.json({ APIMessage: outMessage, guessed: isGuessed });
+
+    res.json({ 
+        APIMessage: outMessage, 
+        guessed: isGuessed,
+        gameOver: gameOver,
+        remaining: remainingGuesses});
 });
 
 app.post('/resetgame', function(req, res) {

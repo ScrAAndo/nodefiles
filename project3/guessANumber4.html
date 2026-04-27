@@ -57,8 +57,8 @@
       // Our API address and port goes here. It can be an IP address or DNS name.
       // In this case it is the loopback address.
 
-      var ipAddressAndPort = "127.0.0.1:8080";
-      //var ipAddressAndPort = location.host + ":8080";
+      //var ipAddressAndPort = "127.0.0.1:8080";
+      var ipAddressAndPort = location.host + ":8080";
       var gameId = 0;
       var userGuess = 0;
 
@@ -90,6 +90,10 @@
             { gameId: gameId, userGuess: userGuess },
             function (data) {
               alert(data["APIMessage"]);
+
+              if (data["gameOver"]) {
+                resetGame(true);
+              }
             },
           );
         }
